@@ -19,5 +19,9 @@
       <InputEndpoint name="Endpoint1" protocol="http" port="80" />
       <InputEndpoint name="HttpsIn" protocol="https" port="443" certificate="CoreFxNetCertificate" />
     </Endpoints>
+    <Imports>
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
+    </Imports>
   </WebRole>
 </ServiceDefinition>
