@@ -23,9 +23,18 @@ namespace WebServer
                     return false;
                 }
             }
+            else if (string.Equals("Negotiate", authType, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals("NTLM", authType, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!HandleChallengeResponseAuthentication(context, authType, user, password, domain))
+                {
+                    context.Response.End();
+                    return false;
+                }
+            }
             else if (authType != null)
             {
-                context.Response.StatusCode = 500;
+                context.Response.StatusCode = 501;
                 context.Response.StatusDescription = "Unsupported auth type: " + authType;
                 context.Response.End();
                 return false;
@@ -82,6 +91,28 @@ namespace WebServer
             // Success.
             return true;
         }
+        private static bool HandleChallengeResponseAuthentication(
+            HttpContext context,
+            string authType,
+            string user,
+            string password,
+            string domain)
+        {
+            string authHeader = context.Request.Headers["Authorization"];
+            if (authHeader == null)
+            {
+                context.Response.StatusCode = 401;
+                context.Response.Headers.Add("WWW-Authenticate", authType);
+                return false;
+            }
 
+            // We don't fully support this authentication method.
+            context.Response.StatusCode = 501;
+            context.Response.StatusDescription = string.Format(
+                "Attempt to use unsupported challenge/response auth type. {0}: {1}",
+                authType,
+                authHeader);
+            return false;
+        }
     }
 }
