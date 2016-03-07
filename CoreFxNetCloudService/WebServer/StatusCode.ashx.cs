@@ -13,7 +13,7 @@ namespace WebServer
             {
                 int statusCode = int.Parse(statusCodeString);
                 context.Response.StatusCode = statusCode;
-                if (!string.IsNullOrEmpty(statusDescription))
+                if (statusDescription != null)
                 {
                     context.Response.StatusDescription = statusDescription;
                 }
