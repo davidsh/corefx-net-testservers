@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "CoreFxNetCloudService", "CoreFxNetCloudService\CoreFxNetCloudService.ccproj", "{57E639CE-BD4D-4CB3-A913-AE51E18CD4A0}"
 EndProject

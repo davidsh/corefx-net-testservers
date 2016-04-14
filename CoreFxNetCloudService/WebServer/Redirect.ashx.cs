@@ -10,48 +10,68 @@ namespace WebServer
     {
         public void ProcessRequest(HttpContext context)
         {
-            string redirectUri = context.Request.QueryString["uri"];
-            string hopsString = context.Request.QueryString["hops"];
-            int hops = 1;
-
-            RequestHelper.AddResponseCookies(context);
-
-            try
+            int statusCode = 302;
+            string statusCodeString = context.Request.QueryString["statuscode"];
+            if (!string.IsNullOrEmpty(statusCodeString))
             {
-                if (string.IsNullOrEmpty(redirectUri))
+                try
+                {
+                    statusCode = int.Parse(statusCodeString);
+                    if (statusCode < 300 || statusCode > 307)
+                    {
+                        context.Response.StatusCode = 500;
+                        context.Response.StatusDescription = "Invalid redirect statuscode: " + statusCodeString;
+                        return;
+                    }
+                }
+                catch (Exception)
                 {
                     context.Response.StatusCode = 500;
-                    context.Response.StatusDescription = "Missing redirection uri";
+                    context.Response.StatusDescription = "Error parsing statuscode: " + statusCodeString;
                     return;
                 }
+            }
 
-                if (!string.IsNullOrEmpty(hopsString))
+            string redirectUri = context.Request.QueryString["uri"];
+            if (string.IsNullOrEmpty(redirectUri))
+            {
+                context.Response.StatusCode = 500;
+                context.Response.StatusDescription = "Missing redirection uri";
+                return;
+            }
+
+            string hopsString = context.Request.QueryString["hops"];
+            int hops = 1;
+            if (!string.IsNullOrEmpty(hopsString))
+            {
+                try
                 {
                     hops = int.Parse(hopsString);
                 }
-
-
-                if (hops <= 1)
+                catch (Exception)
                 {
-                    context.Response.Headers.Add("Location", redirectUri);
+                    context.Response.StatusCode = 500;
+                    context.Response.StatusDescription = "Error parsing hops: " + hopsString;
+                    return;
                 }
-                else
-                {
-                    context.Response.Headers.Add(
-                        "Location",
-                        string.Format("/Redirect.ashx?uri={0}&hops={1}",
-                        redirectUri,
-                        hops - 1));
-                }
-
-                context.Response.StatusCode = 302;
             }
-            catch (Exception)
+
+            RequestHelper.AddResponseCookies(context);
+
+            if (hops <= 1)
             {
-                context.Response.StatusCode = 500;
-                context.Response.StatusDescription = "Error parsing hops: " + hopsString;
+                context.Response.Headers.Add("Location", redirectUri);
+            }
+            else
+            {
+                context.Response.Headers.Add(
+                    "Location",
+                    string.Format("/Redirect.ashx?uri={0}&hops={1}",
+                    redirectUri,
+                    hops - 1));
             }
 
+            context.Response.StatusCode = statusCode;
         }
 
         public bool IsReusable
