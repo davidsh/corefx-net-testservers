@@ -10,7 +10,7 @@ namespace WebServer
 {
     public class EchoWebSocket : IHttpHandler
     {
-        private const int MaxBufferSize = 64 * 1024;
+        private const int MaxBufferSize = 128 * 1024;
 
         public void ProcessRequest(HttpContext context)
         {
