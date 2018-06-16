@@ -17,7 +17,7 @@ namespace WebServer
                 try
                 {
                     statusCode = int.Parse(statusCodeString);
-                    if (statusCode < 300 || statusCode > 307)
+                    if (statusCode < 300 || statusCode > 308)
                     {
                         context.Response.StatusCode = 500;
                         context.Response.StatusDescription = "Invalid redirect statuscode: " + statusCodeString;
